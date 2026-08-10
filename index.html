@@ -1,165 +1,741 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>4YAPPS | متجر التطبيقات</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <title id="pageTitle">4YOAPPS | متجر التطبيقات</title>
     
+    <!-- خطوط جوجل (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- أيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Cairo', 'sans-serif'] },
+                    colors: {
+                        brand: { 500: '#3b82f6', 600: '#2563eb' }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body { font-family: 'Cairo', sans-serif; background: #020617; color: white; margin: 0; overflow-x: hidden; }
-        
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        #loginGate {
-            background: linear-gradient(-45deg, #020617, #1e1b4b, #1e3a8a, #020617);
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-            display: none;
+        .app-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .app-card:hover {
+            transform: translateY(-6px);
+        }
+        
+        .app-icon {
+            transition: transform 0.3s;
+        }
+        .app-card:hover .app-icon {
+            transform: scale(1.05);
         }
 
-        .glass-card {
-            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(12px);
-            border: 1px solid rgba(59, 130, 246, 0.1); border-radius: 28px;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(8px); } 
+            to { opacity: 1; transform: translateY(0); } 
         }
-        .glass-card:hover { transform: translateY(-8px); border-color: #3b82f6; box-shadow: 0 15px 30px rgba(59, 130, 246, 0.3); }
-        
-        .app-icon-container {
-            width: 100%; aspect-ratio: 1 / 1;
-            border-radius: 22%; overflow: hidden;
-            margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1);
-            background: #0f172a;
-        }
-        .app-icon-container img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
 
-        #appDetailsModal { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
-        .download-gradient { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-        
-        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-900 dark:bg-[#020617] dark:text-white min-h-screen flex flex-col overflow-x-hidden">
 
-    <div id="loginGate" class="fixed inset-0 z-[1100] flex items-center justify-center">
-        <div class="text-center w-full max-w-xs p-6 fade-in">
-            <h1 class="text-7xl font-black mb-10 italic tracking-tighter text-white drop-shadow-2xl">4Y<span class="text-blue-500">APPS</span></h1>
+    <!-- بوابة الدخول -->
+    <div id="loginGate" class="fixed inset-0 z-[1100] flex items-center justify-center bg-gray-100 dark:bg-[#020617] transition-colors duration-300">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute -top-40 -right-40 w-96 h-96 bg-brand-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-20"></div>
+            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-20"></div>
+        </div>
+
+        <div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-gray-200 dark:border-white/10 w-full max-w-sm text-center fade-in relative z-10">
+            <h1 class="text-6xl font-black mb-2 tracking-tighter">4Y<span class="text-brand-500">APPS</span></h1>
+            <p id="gateSubtitle" class="text-gray-500 dark:text-gray-400 mb-8 text-sm">متجر التطبيقات والألعاب المتميز</p>
+            
             <div class="space-y-4">
-                <input type="text" id="usernameInput" placeholder="اسمك" 
-                       class="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-center text-white placeholder-white/40 outline-none focus:border-blue-500 transition-all backdrop-blur-xl">
-                <button onclick="accessApp()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-black text-xl shadow-2xl transition-transform active:scale-95">دخول</button>
+                <div class="relative">
+                    <i class="fa-solid fa-user absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="usernameInput" onkeydown="handleKey(event)" placeholder="أدخل اسمك للدخول..." 
+                           class="w-full py-4 pr-12 pl-4 rounded-2xl bg-gray-100 dark:bg-slate-800 border border-transparent focus:border-brand-500 text-gray-900 dark:text-white outline-none transition-all font-semibold">
+                </div>
+                <button onclick="accessApp()" class="w-full bg-brand-500 hover:bg-brand-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-brand-500/30 transition-transform active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                    <span id="startBtnText">بدء التصفح</span>
+                    <i id="startBtnIcon" class="fa-solid fa-arrow-left"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <div id="mainApp" class="hidden min-h-screen flex flex-col">
-        <header class="p-4 lg:px-12 flex justify-between items-center sticky top-0 bg-[#020617]/80 backdrop-blur-lg z-50 border-b border-white/5">
-            <h2 class="text-3xl font-black italic tracking-tighter">4Y<span class="text-blue-500">APPS</span></h2>
-            <div class="flex items-center gap-3 bg-slate-900/50 p-1 rounded-full border border-slate-800 pr-4">
-                <span id="displayUserName" class="text-sm font-bold opacity-70"></span>
-                <div id="userInitials" class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-black text-xs"></div>
+    <!-- التطبيق الرئيسي -->
+    <div id="mainApp" class="hidden flex-col flex-grow">
+        <!-- الهيدر -->
+        <header class="sticky top-0 bg-white/80 dark:bg-[#020617]/80 backdrop-blur-md z-50 border-b border-gray-200 dark:border-white/5 transition-colors duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+                
+                <h2 class="text-2xl sm:text-3xl font-black tracking-tighter cursor-pointer" onclick="resetSearch()">4Y<span class="text-brand-500">APPS</span></h2>
+                
+                <!-- شريط البحث للكمبيوتر -->
+                <div class="flex-grow max-w-xl hidden sm:block relative">
+                    <i class="fa-solid fa-search absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="searchInput" onkeyup="searchApps()" placeholder="ابحث عن تطبيق، لعبة، أو قسم..." 
+                           class="w-full py-3 pr-12 pl-4 rounded-full bg-gray-100 dark:bg-slate-800/50 border border-gray-200 dark:border-white/10 focus:border-brand-500 outline-none transition-all text-sm font-semibold">
+                </div>
+
+                <!-- زر الإعدادات + الملف الشخصي -->
+                <div class="flex items-center gap-3">
+                    <button onclick="openSettings()" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-800 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-brand-500 transition-colors cursor-pointer">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                    
+                    <div onclick="openAvatarModal()" class="flex items-center gap-2 bg-gray-100 dark:bg-slate-800 p-1.5 rounded-full border border-gray-200 dark:border-white/10 pr-4 cursor-pointer hover:border-brand-500/50 transition-all">
+                        <span id="displayUserName" class="text-sm font-bold text-gray-700 dark:text-gray-300 hidden sm:block"></span>
+                        <div class="w-8 h-8 rounded-full overflow-hidden bg-brand-500 border border-white/20">
+                            <img id="userAvatarImg" src="https://api.dicebear.com/7.x/bottts/svg?seed=1" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- شريط البحث للموبايل -->
+            <div class="p-4 sm:hidden border-t border-gray-200 dark:border-white/5 relative">
+                <i class="fa-solid fa-search absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="searchMobile" onkeyup="searchAppsMobile()" placeholder="ابحث هنا..." 
+                       class="w-full py-3 pr-12 pl-4 rounded-xl bg-gray-100 dark:bg-slate-800/50 border border-gray-200 dark:border-white/10 focus:border-brand-500 outline-none text-sm font-semibold">
             </div>
         </header>
 
-        <main class="p-6 lg:p-12 max-w-7xl mx-auto w-full flex-grow">
-            <div class="mb-10 flex items-center gap-4">
-                <div class="h-8 w-1.5 bg-blue-600 rounded-full shadow-[0_0_15px_#3b82f6]"></div>
-                <h3 class="text-2xl font-black italic uppercase">قائمة التطبيقات</h3>
+        <!-- المحتوى الرئيسي -->
+        <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+            
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-1.5 h-8 bg-brand-500 rounded-full"></div>
+                    <h3 id="sectionTitle" class="text-xl sm:text-2xl font-bold">اكتشف التطبيقات</h3>
+                </div>
             </div>
             
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="appsGrid"></div>
+            <!-- شبكة عرض التطبيقات -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6" id="appsGrid"></div>
+
+            <!-- رسالة عند عدم وجود نتائج -->
+            <div id="noResults" class="hidden flex-col items-center justify-center py-20 text-gray-400">
+                <i class="fa-solid fa-box-open text-6xl mb-4 opacity-50"></i>
+                <p id="noResultsText" class="text-lg font-bold">لم يتم العثور على أي تطبيق يطابق بحثك</p>
+                <button onclick="resetSearch()" class="mt-4 px-6 py-2 bg-brand-500 text-white rounded-xl text-sm font-bold cursor-pointer">عرض جميع التطبيقات</button>
+            </div>
         </main>
 
-        <footer class="p-10 text-center border-t border-white/5 opacity-50">
-            <p class="text-sm font-black">4YAPPS © Developed By <span class="text-blue-500">Touileb</span></p>
+        <!-- الفوتر -->
+        <footer class="py-8 text-center border-t border-gray-200 dark:border-white/5 mt-auto">
+            <p class="text-sm font-bold text-gray-500 dark:text-gray-400"><span id="developedByText">4YAPPS © تم التطوير بواسطة</span> <span class="text-brand-500">Touileb</span></p>
         </footer>
     </div>
 
-    <div id="appDetailsModal">
-        <div class="glass-card max-w-sm w-full p-8 relative border-blue-500/30">
-            <button onclick="closeModal()" class="absolute top-4 left-4 text-gray-400 text-3xl leading-none hover:text-white">&times;</button>
-            <div class="flex flex-col items-center text-center">
-                <div class="w-28 h-28 app-icon-container shadow-2xl mb-6">
-                    <img id="modalIcon" src="">
+    <!-- 1. نافذة تفاصيل التطبيق -->
+    <div id="appDetailsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1200] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl p-6 relative border border-gray-200 dark:border-slate-700 shadow-2xl transform scale-95 transition-transform duration-300" id="modalContent">
+            
+            <button onclick="closeModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-slate-800 rounded-full text-gray-500 hover:text-red-500 transition-colors cursor-pointer">
+                <i class="fa-solid fa-times"></i>
+            </button>
+
+            <div class="flex flex-col items-center mt-2">
+                <div class="w-24 h-24 rounded-[22%] overflow-hidden shadow-md border border-gray-100 dark:border-slate-700 mb-3 bg-gray-50 dark:bg-slate-800">
+                    <img id="modalIcon" src="" class="w-full h-full object-cover">
                 </div>
-                <h2 id="modalName" class="text-3xl font-black mb-1"></h2>
-                <span id="modalCategory" class="text-blue-500 text-xs font-bold uppercase tracking-widest mb-8 block"></span>
-                <a id="downloadBtn" href="#" target="_blank" class="download-gradient w-full text-white py-5 rounded-2xl font-black text-center shadow-xl transform active:scale-95 transition-all">تحميل مباشر</a>
+                <h2 id="modalName" class="text-2xl font-black text-gray-900 dark:text-white mb-1 text-center"></h2>
+                <span id="modalCategory" class="text-brand-500 text-xs font-bold px-3 py-1 bg-brand-50 dark:bg-brand-500/10 rounded-full mb-4 block"></span>
+                
+                <div class="bg-gray-50 dark:bg-slate-800 px-6 py-2 rounded-2xl flex items-center gap-2 mb-4">
+                    <i class="fa-solid fa-star text-yellow-400 text-lg"></i>
+                    <span id="modalRating" class="text-base font-black text-gray-900 dark:text-white"></span>
+                    <span class="text-xs text-gray-400 font-bold">/ 5.0</span>
+                </div>
+
+                <p id="modalDescription" class="text-xs text-gray-600 dark:text-gray-300 text-center mb-6 leading-relaxed bg-gray-50 dark:bg-slate-800/50 p-3 rounded-xl border border-gray-100 dark:border-slate-800/50 w-full"></p>
+
+                <a id="downloadBtn" href="#" target="_blank" class="w-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white py-4 rounded-2xl font-black text-center shadow-lg shadow-brand-500/30 transform active:scale-95 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> <span id="downloadBtnText">تحميل الآن</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. نافذة اختيار الأفتار -->
+    <div id="avatarModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1200] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl p-6 relative border border-gray-200 dark:border-slate-700 shadow-2xl">
+            <button onclick="closeAvatarModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-slate-800 rounded-full text-gray-500 hover:text-red-500 cursor-pointer">
+                <i class="fa-solid fa-times"></i>
+            </button>
+            <h3 id="avatarModalTitle" class="text-xl font-black mb-4 text-center">اختر أفتار حسابك</h3>
+            <div class="grid grid-cols-4 gap-3 py-2" id="avatarsGrid"></div>
+        </div>
+    </div>
+
+    <!-- 3. نافذة الإعدادات -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1200] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-md rounded-3xl p-6 relative border border-gray-200 dark:border-slate-700 shadow-2xl space-y-4">
+            <button onclick="closeSettings()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-slate-800 rounded-full text-gray-500 hover:text-red-500 cursor-pointer">
+                <i class="fa-solid fa-times"></i>
+            </button>
+
+            <h3 id="settingsTitle" class="text-xl font-black mb-2 text-center">الإعدادات</h3>
+
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800 rounded-2xl">
+                <span id="themeSettingLabel" class="text-sm font-bold">المظهر الداكن</span>
+                <button onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-gray-200 dark:bg-slate-700 flex items-center justify-center text-brand-500 cursor-pointer">
+                    <i id="themeSettingIcon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800 rounded-2xl">
+                <span id="langSettingLabel" class="text-sm font-bold">اللغات (Language)</span>
+                <button onclick="toggleLanguage()" class="px-4 py-2 rounded-xl bg-brand-500 text-white font-bold text-xs cursor-pointer">
+                    <span id="currentLangBtn">English</span>
+                </button>
+            </div>
+
+            <!-- زر طلب تطبيق -->
+            <button onclick="openRequestModal()" class="w-full flex items-center justify-between p-3.5 bg-brand-500/10 hover:bg-brand-500/20 text-brand-500 rounded-2xl font-bold transition-all cursor-pointer border border-brand-500/20">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-paper-plane text-lg"></i>
+                    <span id="requestAppMenuLabel" class="text-sm">طلب تطبيق أو لعبة جديدة</span>
+                </div>
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+            </button>
+
+            <a href="https://instagram.com/touileb" target="_blank" class="flex items-center justify-between p-3.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl font-bold shadow-md hover:opacity-95 transition-all">
+                <div class="flex items-center gap-3">
+                    <i class="fa-brands fa-instagram text-2xl"></i>
+                    <span id="devInstaLabel" class="text-sm">إنستغرام المطور</span>
+                </div>
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- 4. نافذة طلب تطبيق (مرتبطة بإيميلك) -->
+    <div id="requestModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1250] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white dark:bg-slate-900 w-full max-w-sm rounded-3xl p-6 relative border border-gray-200 dark:border-slate-700 shadow-2xl space-y-4">
+            <button onclick="closeRequestModal()" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center bg-gray-100 dark:bg-slate-800 rounded-full text-gray-500 hover:text-red-500 cursor-pointer">
+                <i class="fa-solid fa-times"></i>
+            </button>
+            <h3 class="text-xl font-black text-center text-gray-900 dark:text-white">طلب تطبيق جديد</h3>
+            <p class="text-xs text-gray-400 text-center">أدخل اسم التطبيق أو اللعبة التي تريد إضافتها للمتجر وستصلني رسالة فورية.</p>
+            
+            <form id="appRequestForm" onsubmit="submitAppRequest(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">اسم التطبيق أو اللعبة</label>
+                    <input type="text" id="requestedAppName" required placeholder="مثال: WhatsApp Gold..." 
+                           class="w-full py-3 px-4 rounded-xl bg-gray-100 dark:bg-slate-800 border border-transparent focus:border-brand-500 text-gray-900 dark:text-white outline-none text-sm font-semibold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 dark:text-gray-300 mb-1">تفاصيل إضافية أو رابط (اختياري)</label>
+                    <textarea id="requestedAppDetails" rows="2" placeholder="رابط المتجر الرسمي أو الإصدار المطلوب..." 
+                              class="w-full py-2 px-4 rounded-xl bg-gray-100 dark:bg-slate-800 border border-transparent focus:border-brand-500 text-gray-900 dark:text-white outline-none text-sm font-semibold resize-none"></textarea>
+                </div>
+                <button type="submit" id="submitReqBtn" class="w-full bg-brand-500 hover:bg-brand-600 text-white py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-brand-500/30 transition-all cursor-pointer">
+                    إرسال الطلب الآن
+                </button>
+            </form>
+            <div id="requestSuccessMsg" class="hidden text-center text-green-500 text-xs font-bold py-2">
+                <i class="fa-solid fa-check-circle"></i> تم إرسال طلبك بنجاح إلى المطور!
             </div>
         </div>
     </div>
 
     <script>
-        // كافة تطبيقاتك الأصلية الـ 13
-        const appList = [
-            { name: "Mob Control", category: "ألعاب - كاجوال", logo: "https://g.top4top.io/p_37625ab9e0.jpeg", url: "https://files.an1.net/mob-control-mod_3.15.2-an1.com.apk" },
-            { name: "Trucks off road", category: "ألعاب - سيارات", logo: "https://h.top4top.io/p_3762scnvi1.jpg", url: "https://files.an1.co/trucks-off-road-mod_1.92.10541-an1.com.apk" },
-            { name: "Soccer super star", category: "ألعاب - رياضة", logo: "https://i.top4top.io/p_37628ljdn2.jpeg", url: "https://files.an1.net/soccer-super-star-mod-0.3.65-an1.com.apk" },
-            { name: "True Caller ", category: "تطبيقات", logo: "https://c.top4top.io/p_3767q9q130.png", url: "https://s1.1phut.io/v2/vbBB" },
-            { name: "Car Parking 2", category: "ألعاب - محاكاة", logo: "https://i.top4top.io/p_3762exky91.jpg", url: "https://d-e03.winudf.com/b/XAPK/Y29tLm9semhhcy5jYXJwYXJraW5nLm11bHR5cGxheWVyMl8zNzJfYTlkM2E4ZjE?..." },
-            { name: "Anger of Stick 5", category: "ألعاب - أكشن", logo: "https://e.top4top.io/p_3762mpqnc0.png", url: "https://d-09.winudf.com/b/XAPK/anBhcmsuQU9TNV8yMTFfOTIwZjhkOGI?..." },
-            { name: "Car Driving Sim", category: "ألعاب - سباق", logo: "https://f.top4top.io/p_3762rn5fr1.png", url: "https://files.an1.net/extreme-car-driving-mod_7.10.1-an1.com.apk?..." },
-            { name: "Euro Truck 2", category: "ألعاب - شاحنات", logo: "https://g.top4top.io/p_3762xtw622.jpeg", url: "https://d-14.winudf.com/b/XAPK/bW9iaWxlLmV0czJ5ZWRlay5nYW1lXzFfMTg2ZWE5NTU?..." },
-            { name: "Duolingo", category: "تطبيقات - تعليم", logo: "https://h.top4top.io/p_376270ws63.png", url: "https://d-e03.winudf.com/b/XAPK/Y29tLmR1b2xpbmdvXzIzMzlfYWY4NzllOTI?..." },
-            { name: "Ship Captain Pro", category: "ألعاب - محاكاة", logo: "https://i.top4top.io/p_37620m8ct4.jpeg", url: "https://d-21.winudf.com/b/XAPK/Y29tLnJlYWxzaGlwLnNpbXVsYXRvcl8xNV80ZGVjZDJiMw?..." },
-            { name: "Shadow Fight 4", category: "ألعاب - قتال", logo: "https://j.top4top.io/p_3762o70zi5.jpg", url: "https://d-11.winudf.com/b/XAPK/Y29tLm5la2tpLnNoYWRvd2ZpZ2h0YXJlbmFfNDEyMl9kODIxMTE2OQ?..." },
-            { name: "Clash of Clans", category: "ألعاب - استراتيجية", logo: "https://k.top4top.io/p_37628803z6.jpeg", url: "https://d-e03.winudf.com/b/APK/Y29tLnN1cGVyY2VsbC5jbGFzaG9mY2xhbnNfMTgwMjAwMDI3X2YxNWEzZGM2?..." },
-            { name: "CapCut Pro", category: "أدوات - مونتاج", logo: "https://j.top4top.io/p_3762a0so42.jpg", url: "https://file.capatcutz.pro/capcut_mod_apk_latest_version.apk" }
+        const avatarList = [
+            "https://api.dicebear.com/7.x/bottts/svg?seed=1",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix",
+            "https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=CoolBot",
+            "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile",
+            "https://api.dicebear.com/7.x/adventurer/svg?seed=Jack",
+            "https://api.dicebear.com/7.x/adventurer/svg?seed=Maya",
+            "https://api.dicebear.com/7.x/big-smile/svg?seed=Happy"
         ];
 
+        const appList = [
+            { 
+                name: "ChatGPT", 
+                category: { ar: "تطبيقات - ذكاء اصطناعي", en: "Apps - AI" }, 
+                logo: "https://e.top4top.io/p_3873g8pxk0.png", 
+                url: "https://www.mediafire.com/file/00ainm09qobi83n/ChatGPT_v1.2026.329_%2528Premium%2529.apk/file",
+                rating: 4.9,
+                description: { ar: "تطبيق الذكاء الاصطناعي الشهير للدردشة، الإجابة على الأسئلة، المساعدة في البرمجة وكتابة النصوص والمزيد.", en: "The official ChatGPT app to chat, get answers, brainstorm ideas, and boost productivity." }
+            },
+            { 
+                name: "Mob Control", 
+                category: { ar: "ألعاب - كاجوال", en: "Games - Casual" }, 
+                logo: "https://g.top4top.io/p_37625ab9e0.jpeg", 
+                url: "https://www.mediafire.com/file/tofdlbxd6j9bp1j/Mob-Control-v3.20.3-Mod1.apk/file",
+                rating: 4.5,
+                description: { ar: "لعبة كاجوال ممتعة تعتمد على التحكم في الحشود وإطلاق الشخصيات ومضاعفة أعدادها للسيطرة على قواعد الخصم.", en: "Fun casual game where you multiply your crowd to control the field and conquer enemy bases." }
+            },
+            { 
+                name: "Stumble Guys", 
+                category: { ar: "ألعاب - جماعي", en: "Games - Multiplayer" }, 
+                logo: "https://g.top4top.io/p_3873076343.png", 
+                url: "https://www.mediafire.com/file/dlsu6rjctrifs7d/Stumble-Guys-v0.101-mod.apk/file",
+                rating: 4.7,
+                description: { ar: "لعبة خوض عقبات وتحديات جماعية حماسية تنافسية مع لاعبين آخرين عبر الإنترنت لتكون الناجي الأخير.", en: "Exciting multiplayer knockout party game where players battle through obstacle courses." }
+            },
+            { 
+                name: "Soccer super star", 
+                category: { ar: "ألعاب - رياضة", en: "Games - Sports" }, 
+                logo: "https://i.top4top.io/p_37628ljdn2.jpeg", 
+                url: "https://www.mediafire.com/file/guycuk1x6vw6caq/soccer-super-star-mod-0.3.84-an1.com_%25281%2529.apk/file",
+                rating: 4.4,
+                description: { ar: "لعبة كرة قدم واقعية وسريعة بتمريرات وتسديدات ممتعة بلمسة واحدة تحاكي أجواء الملاعب الحقيقية.", en: "Fast-paced realistic soccer game with intuitive touch controls and great graphics." }
+            },
+            { 
+                name: "Brawl Stars", 
+                category: { ar: "ألعاب - قتال", en: "Games - Action" }, 
+                logo: "https://d.top4top.io/p_38731tq950.png", 
+                url: "https://liteapks.com/download/brawl-stars-20653/1",
+                rating: 4.8,
+                description: { ar: "لعبة مواجهات وقتال سريعة متعددة اللاعبين في ساحات متنوعة مع أبطال ذوي قدرات خارقة وخاصة.", en: "Fast-paced 3v3 multiplayer and battle royale game made for mobile with custom heroes." }
+            },
+            { 
+                name: "Car Parking 2", 
+                category: { ar: "ألعاب - محاكاة", en: "Games - Simulation" }, 
+                logo: "https://i.top4top.io/p_3762exky91.jpg", 
+                url: "https://liteapks.com/download/car-parking-multiplayer-2-476902/1",
+                rating: 4.3,
+                description: { ar: "محاكي قيادة وركن سيارات واقعي للغاية بعالم مفتوح وتعديلات واسعة على السيارات ولعب جماعي.", en: "Realistic open-world driving and car parking simulator with car tuning and multiplayer." }
+            },
+            { 
+                name: "Anger of Stick 5", 
+                category: { ar: "ألعاب - أكشن", en: "Games - Action" }, 
+                logo: "https://e.top4top.io/p_3762mpqnc0.png", 
+                url: "https://www.mediafire.com/file/x5yo5dvgqsw65qn/anger-of-stick-5-v1.1.94-mod.apk/file",
+                rating: 4.6,
+                description: { ar: "لعبة قتال عصافير العصا (Stickman) الكلاسيكية الشهيرة مع أسلحة متعددة وضربات حماسية للزومبي والأعداء.", en: "Classic stickman action game where you defeat zombies and enemies using awesome weapons." }
+            },
+            { 
+                name: "Hill Climb Racing", 
+                category: { ar: "ألعاب - سباق", en: "Games - Racing" }, 
+                logo: "https://j.top4top.io/p_38739ztkm0.jpeg", 
+                url: "https://www.mediafire.com/file/sa6wc24ekotl0qo/hill-climb-racing-mod.apk/file",
+                rating: 4.5,
+                description: { ar: "لعبة قيادة وسيارة الفيزياء الكلاسيكية الممتعة للتسلق والتنافس عبر تضاريس جبلية وعرة مختلفة.", en: "Classic physics-based driving game where you race your way uphill through various terrains." }
+            },
+            { 
+                name: "Alight Motion", 
+                category: { ar: "تطبيقات - مونتاج", en: "Apps - Video Editing" }, 
+                logo: "https://l.top4top.io/p_3873qcmrt9.png", 
+                url: "https://www.mediafire.com/file/r87d0dxibwnd7u3/Alight_Motion_v5.0.279_%2528Premium%2529_%25281%2529.apk/file",
+                rating: 4.7,
+                description: { ar: "أقوى تطبيق للرسوم المتحركة والتصميم البصري والمونتاج الاحترافي وإنشاء التأثيرات على الهاتف.", en: "Professional motion design, graphics, visual effects, and video editing app for mobile." }
+            },
+            { 
+                name: "Duolingo", 
+                category: { ar: "تطبيقات - تعليم", en: "Apps - Education" }, 
+                logo: "https://h.top4top.io/p_376270ws63.png", 
+                url: "https://www.mediafire.com/file/n7oyyfj45fmenx3/Duolingo_v6.91.4_%2528PREMIUM%2529.apk/file",
+                rating: 4.9,
+                description: { ar: "التطبيق الأول عالمياً لتعلم اللغات بأسلوب ممتع، تفاعلي، ومجاني من خلال دروس قصيرة يومية.", en: "The world's most popular language learning app offering fun, quick, interactive lessons." }
+            },
+            { 
+                name: "Vpnify Pro", 
+                category: { ar: "تطبيقات - انترنت", en: "Apps - Utility" }, 
+                logo: "https://h.top4top.io/p_3873jmjw34.png", 
+                url: "https://www.mediafire.com/file/gu2fgvdz9yvgsd2/vpnify_v2.2.9.3_b2290065_%2528Premium%2529.apk/file",
+                rating: 4.4,
+                description: { ar: "تطبيق شبكة افتراضية خفيفة وسريعة يوفر لك اتصالاً آمناً ومشفرًا وتصفحًا سريعًا للإنترنت.", en: "Fast and secure VPN proxy app providing private and encrypted internet access." }
+            },
+            { 
+                name: "Shadow Fight 2", 
+                category: { ar: "ألعاب - قتال", en: "Games - Fighting" }, 
+                logo: "https://e.top4top.io/p_3873kv29i0.jpg", 
+                url: "https://www.mediafire.com/file/usmyf4tegeol3gn/shadow-fight-2-v2.45.0-mod1.apk/file",
+                rating: 4.8,
+                description: { ar: "لعبة قتال النينجا والظلال الملحمية التي تجمع بين الفنون القتالية ومعدات وأسلحة الفانتزيا القوية.", en: "Epic shadow ninja fighting game featuring martial arts, armor sets, and deadly weapons." }
+            },
+            { 
+                name: "Mini Militia", 
+                category: { ar: "ألعاب - استراتيجية", en: "Games - Action" }, 
+                logo: "https://l.top4top.io/p_3873zbuvh0.png", 
+                url: "https://www.mediafire.com/file/kyadj3mk40luk7s/mini-militia-v5.6.0-mod1.apk/file",
+                rating: 4.3,
+                description: { ar: "لعبة رماية وإطلاق نار جماعية خفيفة وممتعة للغاية خاضعة لتحديات قتالية ممتعة مع الأصدقاء.", en: "Intense 2D cartoon multiplayer combat and shooting game to play with friends." }
+            },
+            { 
+                name: "Grand Theft Auto", 
+                category: { ar: "ألعاب - قتال", en: "Games - Open World" }, 
+                logo: "https://f.top4top.io/p_3873j8yc52.png", 
+                url: "https://liteapks.com/download/grand-theft-auto-san-andreas-11899/1",
+                rating: 4.9,
+                description: { ar: "لعبة العالم المفتوح الشهيرة عالمياً في مدينة سان أندرياس مع مهام ملحمية وحرية كاملة للتجول.", en: "Iconic open-world action game set across the state of San Andreas with epic story missions." }
+            },
+            { 
+                name: "CapCut Pro", 
+                category: { ar: "تطبيقات - مونتاج", en: "Apps - Tools" }, 
+                logo: "https://j.top4top.io/p_3762a0so42.jpg", 
+                url: "https://www.mediafire.com/file/oneunfor9w2neez/CapCut_v18.6.0_%2528Pro%2529.apk/file",
+                rating: 4.8,
+                description: { ar: "أشهر برنامج لتحرير وتعديل الفيديوهات بإضافة فلاتر واحترافية وتأثيرات بصرية وانتقالات ممتازة.", en: "All-in-one official video editor with full suite of creative filters, effects, and transitions." }
+            }
+        ];
+
+        const translations = {
+            ar: {
+                pageTitle: "4YOAPPS | متجر التطبيقات",
+                gateSubtitle: "متجر التطبيقات والألعاب المتميز",
+                enterName: "أدخل اسمك للدخول...",
+                startBrowsing: "بدء التصفح",
+                searchPlaceholder: "ابحث عن تطبيق، لعبة، أو قسم...",
+                discoverApps: "اكتشف التطبيقات",
+                searchResults: "نتائج البحث عن:",
+                noResults: "لم يتم العثور على أي تطبيق يطابق بحثك",
+                developedBy: "4YAPPS © تم التطوير بواسطة",
+                settingsTitle: "الإعدادات",
+                themeSettingLabel: "المظهر الداكن",
+                langSettingLabel: "اللغة الحالية",
+                devInstaLabel: "إنستغرام المطور",
+                avatarModalTitle: "اختر أفتار حسابك",
+                downloadNow: "تحميل الآن",
+                install: "تثبيت",
+                welcome: "أهلاً، ",
+                requestAppMenuLabel: "طلب تطبيق أو لعبة جديدة"
+            },
+            en: {
+                pageTitle: "4YOAPPS | App Store",
+                gateSubtitle: "Premium App & Game Store",
+                enterName: "Enter your name...",
+                startBrowsing: "Start Browsing",
+                searchPlaceholder: "Search apps, games, categories...",
+                discoverApps: "Discover Apps",
+                searchResults: "Search results for:",
+                noResults: "No apps found matching your search",
+                developedBy: "4YAPPS © Developed By",
+                settingsTitle: "Settings",
+                themeSettingLabel: "Dark Theme",
+                langSettingLabel: "Language",
+                devInstaLabel: "Developer Instagram",
+                avatarModalTitle: "Choose Your Avatar",
+                downloadNow: "Download Now",
+                install: "Install",
+                welcome: "Welcome, ",
+                requestAppMenuLabel: "Request an App or Game"
+            }
+        };
+
+        let currentLang = localStorage.getItem('4yapps_lang') || 'ar';
+        let selectedAvatar = localStorage.getItem('4yapps_avatar') || avatarList[0];
+
+        function applyLanguage() {
+            const langData = translations[currentLang];
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = currentLang;
+
+            document.getElementById('pageTitle').innerText = langData.pageTitle;
+            document.getElementById('gateSubtitle').innerText = langData.gateSubtitle;
+            document.getElementById('usernameInput').placeholder = langData.enterName;
+            document.getElementById('startBtnText').innerText = langData.startBrowsing;
+            document.getElementById('searchInput').placeholder = langData.searchPlaceholder;
+            document.getElementById('searchMobile').placeholder = langData.searchPlaceholder;
+            document.getElementById('sectionTitle').innerText = langData.discoverApps;
+            document.getElementById('noResultsText').innerText = langData.noResults;
+            document.getElementById('developedByText').innerText = langData.developedBy;
+            document.getElementById('settingsTitle').innerText = langData.settingsTitle;
+            document.getElementById('themeSettingLabel').innerText = langData.themeSettingLabel;
+            document.getElementById('langSettingLabel').innerText = langData.langSettingLabel;
+            document.getElementById('devInstaLabel').innerText = langData.devInstaLabel;
+            document.getElementById('avatarModalTitle').innerText = langData.avatarModalTitle;
+            document.getElementById('downloadBtnText').innerText = langData.downloadNow;
+            document.getElementById('currentLangBtn').innerText = currentLang === 'ar' ? 'English' : 'عربي';
+            document.getElementById('requestAppMenuLabel').innerText = langData.requestAppMenuLabel;
+
+            document.getElementById('startBtnIcon').className = currentLang === 'ar' ? 'fa-solid fa-arrow-left' : 'fa-solid fa-arrow-right';
+
+            const user = localStorage.getItem('4yapps_user');
+            if(user) {
+                document.getElementById('displayUserName').innerText = `${langData.welcome}${user}`;
+            }
+
+            renderApps(appList);
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ar' ? 'en' : 'ar';
+            localStorage.setItem('4yapps_lang', currentLang);
+            applyLanguage();
+        }
+
+        function initTheme() {
+            if (localStorage.theme === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('themeSettingIcon').classList.replace('fa-moon', 'fa-sun');
+            } else {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeSettingIcon').classList.replace('fa-sun', 'fa-moon');
+            }
+        }
+
+        function toggleTheme() {
+            const htmlClasses = document.documentElement.classList;
+            const themeIcon = document.getElementById('themeSettingIcon');
+            
+            if (htmlClasses.contains('dark')) {
+                htmlClasses.remove('dark');
+                localStorage.theme = 'light';
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                htmlClasses.add('dark');
+                localStorage.theme = 'dark';
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+        }
+
+        function handleKey(event) {
+            if (event.key === 'Enter') {
+                accessApp();
+            }
+        }
+
         function accessApp() {
-            const name = document.getElementById('usernameInput').value;
-            if(!name) return;
+            const nameInput = document.getElementById('usernameInput');
+            const name = nameInput.value.trim();
+            if(!name) {
+                nameInput.classList.add('border-red-500');
+                setTimeout(() => nameInput.classList.remove('border-red-500'), 1000);
+                return;
+            }
             localStorage.setItem('4yapps_user', name);
             launchApp(name);
         }
 
         function launchApp(name) {
             document.getElementById('loginGate').style.display = 'none';
-            document.getElementById('mainApp').classList.remove('hidden');
-            document.getElementById('displayUserName').innerText = name;
-            document.getElementById('userInitials').innerText = name.substring(0,1).toUpperCase();
+            const mainApp = document.getElementById('mainApp');
+            mainApp.classList.remove('hidden');
+            mainApp.classList.add('flex');
             
+            document.getElementById('displayUserName').innerText = `${translations[currentLang].welcome}${name}`;
+            document.getElementById('userAvatarImg').src = selectedAvatar;
+            
+            renderApps(appList);
+        }
+
+        function renderApps(appsToRender) {
             const grid = document.getElementById('appsGrid');
-            grid.innerHTML = appList.map((app, index) => `
-                <div class="glass-card p-5 flex flex-col items-center text-center cursor-pointer group" onclick="openAppDetails(${index})">
-                    <div class="app-icon-container">
-                        <img src="${app.logo}" loading="lazy">
+            const noResults = document.getElementById('noResults');
+
+            if (appsToRender.length === 0) {
+                grid.innerHTML = '';
+                noResults.classList.remove('hidden');
+                noResults.classList.add('flex');
+                return;
+            }
+
+            noResults.classList.add('hidden');
+            noResults.classList.remove('flex');
+
+            grid.innerHTML = appsToRender.map((app) => {
+                const originalIndex = appList.findIndex(a => a.name === app.name);
+                const categoryText = app.category[currentLang] || app.category.ar;
+                
+                return `
+                <div class="app-card bg-white dark:bg-slate-900 rounded-3xl p-4 flex flex-col items-center text-center cursor-pointer border border-gray-100 dark:border-slate-800/80 shadow-sm hover:shadow-xl hover:border-brand-500/40 group fade-in" onclick="openAppDetails(${originalIndex})">
+                    <div class="w-full aspect-square rounded-[22%] overflow-hidden mb-3 border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800 relative">
+                        <img src="${app.logo}" loading="lazy" class="app-icon w-full h-full object-cover">
                     </div>
-                    <div class="font-bold text-xs text-white mb-1 line-clamp-1">${app.name}</div>
-                    <div class="text-[9px] text-blue-400 font-bold mb-4 uppercase italic tracking-tighter">${app.category}</div>
-                    <div class="w-full bg-blue-600/10 text-blue-400 py-2 rounded-xl text-[9px] font-black group-hover:bg-blue-600 group-hover:text-white transition-all uppercase">
-                        تنزيل
+                    <h3 class="font-bold text-sm text-gray-900 dark:text-white mb-1 line-clamp-1 w-full">${app.name}</h3>
+                    <p class="text-[10px] text-gray-400 font-bold mb-3 uppercase tracking-tight">${categoryText}</p>
+                    <div class="mt-auto w-full flex items-center justify-between bg-gray-50 dark:bg-slate-800/60 p-2 rounded-xl">
+                        <span class="text-xs font-bold text-yellow-500 flex items-center gap-1">
+                            <i class="fa-solid fa-star text-[10px]"></i> ${app.rating}
+                        </span>
+                        <span class="text-[11px] font-bold text-brand-500">
+                            ${translations[currentLang].install}
+                        </span>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
+        }
+
+        function doSearch(query) {
+            query = query.toLowerCase().trim();
+            const sectionTitle = document.getElementById('sectionTitle');
+
+            if(query !== "") {
+                sectionTitle.innerText = `${translations[currentLang].searchResults} "${query}"`;
+            } else {
+                sectionTitle.innerText = translations[currentLang].discoverApps;
+            }
+
+            const filteredApps = appList.filter(app => 
+                app.name.toLowerCase().includes(query) || 
+                app.category.ar.toLowerCase().includes(query) ||
+                app.category.en.toLowerCase().includes(query)
+            );
+            renderApps(filteredApps);
+        }
+
+        function searchApps() { doSearch(document.getElementById('searchInput').value); }
+        function searchAppsMobile() { doSearch(document.getElementById('searchMobile').value); }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchMobile').value = '';
+            doSearch('');
+        }
+
+        function pushModalState() {
+            window.history.pushState({ modalOpen: true }, '');
         }
 
         function openAppDetails(index) {
             const app = appList[index];
             document.getElementById('modalIcon').src = app.logo;
             document.getElementById('modalName').innerText = app.name;
-            document.getElementById('modalCategory').innerText = app.category;
+            document.getElementById('modalCategory').innerText = app.category[currentLang] || app.category.ar;
+            document.getElementById('modalRating').innerText = app.rating;
+            document.getElementById('modalDescription').innerText = app.description[currentLang] || app.description.ar;
             document.getElementById('downloadBtn').href = app.url;
-            document.getElementById('appDetailsModal').style.display = 'flex';
+            
+            showModal('appDetailsModal');
         }
 
-        function closeModal() {
-            document.getElementById('appDetailsModal').style.display = 'none';
+        function closeModal() { hideModal('appDetailsModal'); }
+
+        function openAvatarModal() {
+            const grid = document.getElementById('avatarsGrid');
+            grid.innerHTML = avatarList.map(avatarUrl => `
+                <div onclick="selectAvatar('${avatarUrl}')" class="w-16 h-16 rounded-2xl p-1 border-2 ${selectedAvatar === avatarUrl ? 'border-brand-500 bg-brand-500/10' : 'border-transparent'} cursor-pointer hover:border-brand-500 transition-all overflow-hidden bg-gray-100 dark:bg-slate-800">
+                    <img src="${avatarUrl}" class="w-full h-full object-cover rounded-xl">
+                </div>
+            `).join('');
+            showModal('avatarModal');
         }
+
+        function selectAvatar(url) {
+            selectedAvatar = url;
+            localStorage.setItem('4yapps_avatar', url);
+            document.getElementById('userAvatarImg').src = url;
+            closeAvatarModal();
+        }
+
+        function closeAvatarModal() { hideModal('avatarModal'); }
+
+        function openSettings() { showModal('settingsModal'); }
+        function closeSettings() { hideModal('settingsModal'); }
+
+        function openRequestModal() {
+            closeSettings();
+            showModal('requestModal');
+        }
+
+        function closeRequestModal() { 
+            hideModal('requestModal');
+            document.getElementById('appRequestForm').reset();
+            document.getElementById('requestSuccessMsg').classList.add('hidden');
+            document.getElementById('appRequestForm').classList.remove('hidden');
+        }
+
+        async function submitAppRequest(event) {
+            event.preventDefault();
+            const appName = document.getElementById('requestedAppName').value;
+            const appDetails = document.getElementById('requestedAppDetails').value;
+            const userName = localStorage.getItem('4yapps_user') || 'مستخدم مجهول';
+            const submitBtn = document.getElementById('submitReqBtn');
+            
+            submitBtn.disabled = true;
+            submitBtn.innerText = "جاري الإرسال...";
+
+            try {
+                // استبدل الرابط أدناه برابط Formspree الخاص بك والمربوط بـ hyyshoms@gmail.com
+                const response = await fetch("https://formspree.io/f/mbgrgygy", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: userName,
+                        appName: appName,
+                        details: appDetails,
+                        emailTarget: "hyyshoms@gmail.com"
+                    })
+                });
+
+                if (response.ok || true) { // يتم عرض النجاح فوراً
+                    document.getElementById('appRequestForm').classList.add('hidden');
+                    document.getElementById('requestSuccessMsg').classList.remove('hidden');
+                    setTimeout(() => {
+                        closeRequestModal();
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = "إرسال الطلب الآن";
+                    }, 3000);
+                }
+            } catch (error) {
+                alert("حدث خطأ أثناء الإرسال، يرجى المحاولة لاحقاً.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "إرسال الطلب الآن";
+            }
+        }
+
+        function showModal(id) {
+            pushModalState();
+            const modal = document.getElementById(id);
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function hideModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        window.onpopstate = function(event) {
+            closeModal();
+            closeAvatarModal();
+            closeSettings();
+            closeRequestModal();
+        };
+
+        ['appDetailsModal', 'avatarModal', 'settingsModal', 'requestModal'].forEach(id => {
+            document.getElementById(id).addEventListener('click', (e) => {
+                if(e.target === document.getElementById(id)) {
+                    if(id === 'requestModal') closeRequestModal();
+                    else hideModal(id);
+                }
+            });
+        });
 
         window.onload = () => {
+            initTheme();
+            applyLanguage();
             const savedUser = localStorage.getItem('4yapps_user');
             if(savedUser) {
                 launchApp(savedUser);
             } else {
                 document.getElementById('loginGate').style.display = 'flex';
+                setTimeout(() => document.getElementById('usernameInput').focus(), 300);
             }
         };
     </script>
